@@ -1,4 +1,5 @@
 # REF: http://www.rubygeocoder.com/
+# REF: http://stackoverflow.com/questions/3602100/ruby-geocoding-library-compatible-with-latest-google-maps-yahoo-maps-bing-apis
 require 'geocoder'
 module GeocoderService
 # Method to convert Address to Latitude and Longitude
