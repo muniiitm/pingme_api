@@ -17,6 +17,8 @@ def ip_to_latlng(ip)
 begin
 geocoder = Geocoder.search(ip)
 city = geocoder[0].city
+state = geocoder[0].region_name
+zip = geocoder[0].zipcode
 country = geocoder[0].country
 geocoder[0].latitude
 geocoder[0].longitude
