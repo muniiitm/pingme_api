@@ -1,8 +1,10 @@
-require  "rubygems"
+require "rubygems"
 require "bundler/setup"
 require "sinatra"
+require "sinatra/json"
 require "haml"
-require "app"
+require 'data_mapper'
+require "./app"
  
 set :run, false
 set :raise_errors, true
