@@ -1,12 +1,14 @@
-require './models/associate'
+# to load all models
+Dir["./models/*.rb"].each { |model| require model }
 
+# Database connection 
 configure :development do
   require './db/database'
 end
 
-set :json_encoder, :to_json
+require './controllers/associates_controller'
 
 get '/' do
   @associate = Associate.all 
-  @associate.to_yaml
+  erb :index
 end

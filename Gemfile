@@ -10,6 +10,9 @@ gem "chronic"
 gem 'data_mapper'
 gem 'thin'
 
+gem 'net-ldap'
+gem 'json'
+
 group :development, :test do 
 	gem 'mysql2'
 	gem 'dm-mysql-adapter'
