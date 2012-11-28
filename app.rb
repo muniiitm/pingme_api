@@ -1,14 +1,18 @@
-# to load all models
-Dir["./models/*.rb"].each { |model| require model }
+#~ require './lib/geocoder_service'
+require 'rubygems'
+require 'bundler/setup'
+require 'sinatra'
+require File.join(File.dirname(__FILE__), 'environment')
 
-# Database connection 
+
 configure :development do
   require './db/database'
 end
 
-require './controllers/associates_controller'
 
-get '/' do
-  @associate = Associate.all 
-  erb :index
+class App < Sinatra::Base
+  get "/" do
+    Associate.all
+    "test"
+  end
 end
