@@ -12,3 +12,8 @@ get '/' do
   @associate = Associate.all 
   erb :index
 end
+
+not_found do
+	'{"response":{"status": "404", "message": "Page not found!"}}'	
+end
+
