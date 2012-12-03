@@ -1,7 +1,12 @@
 class App < Sinatra::Base
   
-  get '/test'do
-   "welocme"
+  # To add the latitude and longitude values
+  get '/update_latlong'do
+    locations = Location.all
+    locations.each do |location|
+      response = GeocoderService.address_to_latlng(location.address)
+      location.update(:longitude =>	response.first.longitude,:latitude=>response.first.latitude) unless response.empty?
+    end
   end
 
   post '/associates/location' do
@@ -28,3 +33,4 @@ class App < Sinatra::Base
     end
   end
 end
+
