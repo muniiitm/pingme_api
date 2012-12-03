@@ -1,8 +1,5 @@
 class App < Sinatra::Base  
 
-  get '/test'do    
-   "welocme"   
-  end
 
   post '/associates/location' do
     access_token = params[:access_token]

@@ -13,7 +13,8 @@ gem 'data_mapper'
 gem 'net-ldap'
 gem 'json'
 
-
+  gem 'factory_girl_rails'
+  gem 'factory_girl'
 	gem 'mysql'
 	gem 'dm-mysql-adapter'
 
