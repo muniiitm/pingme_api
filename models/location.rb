@@ -14,4 +14,9 @@ class Location
   property :created_at, DateTime
   property :updated_at, DateTime
 
+  # http://datamapper.org/docs/associations.html
+  # has many relation
+  
+  has n, :associate_locations
+
 end

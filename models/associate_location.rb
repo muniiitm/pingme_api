@@ -11,4 +11,7 @@ class AssociateLocation
   property :created_at, DateTime  
   property :updated_at, DateTime
 
+  belongs_to :associate
+  belongs_to :location
+
 end
