@@ -1,0 +1,7 @@
+# Database configuration 
+
+adapter: mysql2
+database: pingme_web_development
+username: root
+password: 
+host: localhost
