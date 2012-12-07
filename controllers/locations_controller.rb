@@ -1,5 +1,14 @@
 class App < Sinatra::Base  
 
+  get '/update_latlong'do
+    locations = Location.all
+    locations.map do |location|
+      if !location.address.nil?
+        response = GeocoderService.address_to_latlng(location.address)        
+        location.update(:longitude => response.first.longitude,:latitude=>response.first.latitude) unless response.nil?
+      end      
+    end    
+  end
 
   post '/associates/location' do
     access_token = params[:access_token]
@@ -20,6 +29,9 @@ class App < Sinatra::Base
     end
   end
   
+  get '/locations' do
+  end
+
   post '/associates' do		
     unless params[:username] == ""
       associate = Associate.new
