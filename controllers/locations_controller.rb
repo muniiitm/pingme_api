@@ -10,6 +10,7 @@ class App < Sinatra::Base
     end
   end
 
+#{Date.today.beginning_of_week} and DATE(end_date) = #{Date.today.end_of_week}" 
   post '/associates/location' do
     user = params[:user]
     if @flag
@@ -18,7 +19,11 @@ class App < Sinatra::Base
         current_date = DateTime.now
         start_date = current_date.strftime("%Y-%m-%d")
         end_date = "#{start_date}" if date_range == "today"
-        end_date = (current_date + 7).strftime("%Y-%m-%d") if date_range == 'week'
+        
+        if date_range == 'week'
+          start_date = Date.today.beginning_of_week.strftime("%Y-%m-%d")
+          end_date = Date.today.end_of_week.strftime("%Y-%m-%d") 
+        end
       else
         start_date = user["start_date"]
         end_date = user["end_date"]
@@ -48,17 +53,20 @@ class App < Sinatra::Base
     end
   end
   
-  get '/locations' do
-    #~ if @flag
-      #~ locations = Location.all
-      #~ addresses = locations.map(&:address).uniq.reject { |a| a.nil? }
-      #~ countries = locations.map(&:country).uniq.reject { |c| c.nil? }
-      #~ states = locations.map(&:state).uniq.reject { |s| s.nil? }
-      #~ cities = locations.map(&:city).uniq.reject { |c| c.nil? }
-      #~ {:addresses => addresses, :countries => countries, :states => states, :cities => cities, :access_token => @access_token, :status => "success"}.to_json
-    #~ else
-      #~ {:status => "failed"}.to_json
-    #~ end
+  get '/locations/new' do
+    if @flag
+      locations = Location.all
+      addresses = locations.map(&:address).uniq.reject { |a| a.nil? }
+      countries = locations.map(&:country).uniq.reject { |c| c.nil? }
+      states = locations.map(&:state).uniq.reject { |s| s.nil? }
+      cities = locations.map(&:city).uniq.reject { |c| c.nil? }
+      {:addresses => addresses, :countries => countries, :states => states, :cities => cities, :access_token => @access_token, :status => "success"}.to_json
+    else
+      {:status => "failed"}.to_json
+    end
+  end
+
+  get '/locations' do   
     AssociateLocation.search_associates(params[:search][:associate_name],params[:search][:location]).to_json(:include=>[:associate,:location])
     #~ p AssociateLocation.where("DATE(start_date) = '#{Date.today}'")
   end
