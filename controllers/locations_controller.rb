@@ -31,5 +31,10 @@ class App < Sinatra::Base
   end
   
   get '/locations' do
+    AssociateLocation.search_associates(params[:search][:associate_name],params[:search][:location]).to_json(:include=>[:associate,:location])
+    #~ p AssociateLocation.where("DATE(start_date) = '#{Date.today}'")
   end 
 end
+
+
+
