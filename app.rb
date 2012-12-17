@@ -7,8 +7,8 @@ class App < Sinatra::Base
 		 	@access_token = params[:access_token]		 			 	
 	    access_token_decode = Base64.decode64(@access_token)	    
 	    @user_id, secure_key = access_token_decode.split(" ")	    
-	    associate = Associate.where("user_id = #{@user_id}").first
-	    @flag = (associate.nil?) ? false : true	    
+	    @associate = Associate.where("user_id = #{@user_id}").first
+	    @flag = (@associate.nil?) ? false : true	    
 	  end	  
 	end
 
