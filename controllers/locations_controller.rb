@@ -66,9 +66,25 @@ class App < Sinatra::Base
     end
   end
 
-  get '/locations' do   
-    AssociateLocation.search_associates(params[:search][:associate_name],params[:search][:location]).to_json(:include=>[:associate,:location])
-    #~ p AssociateLocation.where("DATE(start_date) = '#{Date.today}'")
+ get '/locations' do
+    search_key = generate_search_query
+    AssociateLocation.search_associates(params[:search][:associate_name],search_key ,params[:search][:location]).to_json(:include=>[:associate,:location])
+  end
+
+
+  def generate_search_query
+    date = Date.today
+    case params[:search][:time_period] 
+      when "today"
+        search_date = "DATE(start_date) or DATE(end_date) = '#{date}'"
+      when "this week"
+        search_date = "DATE(start_date) = #{date.beginning_of_week} and DATE(end_date) = #{date.end_of_week}" 
+      when "next week"
+        date = (Date.today.end_of_week + 1)
+        search_date = "DATE(start_date) = #{date.beginning_of_week} and DATE(end_date) = #{date.end_of_week}" 
+    end
+    search_key = "associates.first_name LIKE ? and locations.city LIKE ?"
+    search_key << "and (#{search_date })" unless search_date.nil?
   end
 
   get '/associate' do
