@@ -1,9 +1,9 @@
 class AssociateLocation < ActiveRecord::Base 
  belongs_to :location
  belongs_to :associate
-scope :search_associates, lambda { |name,location|
+scope :search_associates, lambda { |name,search_key,location|
   includes(:associate,:location).
-  where(["associates.first_name LIKE ? and locations.city LIKE ?","%#{name}%", "%#{location}%"])
+  where([search_key,"%#{name}%", "%#{location}%"])
 }
 end
 
