@@ -11,6 +11,7 @@ class App < Sinatra::Base
   end
 
 #{Date.today.beginning_of_week} and DATE(end_date) = #{Date.today.end_of_week}" 
+# Move the logics into model
   post '/associates/location' do
     user = params[:user]
     if @flag
@@ -32,7 +33,7 @@ class App < Sinatra::Base
         location = Location.where(["country = ? and city = ? and state = ?", user["country"], user["city"], user["state"]]).first
         location = Location.create(:country => user["country"], :state => user["state"], :city => user["city"]) if location.blank?
         ass_loc = AssociateLocation.where(:associate_id => @associate.user_id, :start_date => "#{start_date} 00:00:00", :end_date => "#{end_date} 00:00:00").first
-
+        # avoid assigning the each attributes separately
         if ass_loc.blank?
           associate_location = AssociateLocation.create(:associate_id => @associate.user_id, :location_id => location.id, :vnet => user["vnet"], :seat_number => user["seat_number"], :start_date => start_date, :end_date => end_date)
         else
@@ -53,6 +54,7 @@ class App < Sinatra::Base
     end
   end
   
+  # Optimize the code # code gets repeated in the '/associate' # Please have look
   get '/locations/new' do
     if @flag
       locations = Location.all
