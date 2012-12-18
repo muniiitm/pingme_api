@@ -87,6 +87,7 @@ class App < Sinatra::Base
     end
     search_key = "associates.first_name LIKE ? and locations.city LIKE ?"
     search_key << "and (#{search_date })" unless search_date.nil?
+    return search_key
   end
 
   get '/associate' do
