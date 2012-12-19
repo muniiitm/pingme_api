@@ -9,9 +9,8 @@ class App < Sinatra::Base
       end
     end
   end
-
-#{Date.today.beginning_of_week} and DATE(end_date) = #{Date.today.end_of_week}" 
-# Move the logics into model
+  
+  # Move the logics into model
   post '/associates/location' do
     user = params[:user]
     if @flag
