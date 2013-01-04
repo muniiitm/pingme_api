@@ -89,10 +89,10 @@ class App < Sinatra::Base
       when "today"
         search_date = "DATE(start_date) or DATE(end_date) = '#{date}'"
       when "this week"
-        search_date = "DATE(start_date) = #{date.beginning_of_week} and DATE(end_date) = #{date.end_of_week}" 
+      search_date =  "Date(start_date) between '#{date.beginning_of_week}' and '#{date.end_of_week}' or Date(end_date) between '#{date.beginning_of_week}' and '#{date.end_of_week}' "
       when "next week"
         date = (Date.today.end_of_week + 1)
-        search_date = "DATE(start_date) = #{date.beginning_of_week} and DATE(end_date) = #{date.end_of_week}" 
+        search_date =  "Date(start_date) between '#{date.beginning_of_week}' and '#{date.end_of_week}' or Date(end_date) between '#{date.beginning_of_week}' and '#{date.end_of_week}' "
     end
     search_key = "associates.first_name LIKE ? and locations.city LIKE ?"
     search_key << "and (#{search_date })" unless search_date.nil?
