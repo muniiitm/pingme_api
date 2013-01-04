@@ -31,12 +31,12 @@ class App < Sinatra::Base
       if !start_date.blank? && !end_date.blank?
         location = Location.where(["country = ? and city = ? and state = ?", user["country"], user["city"], user["state"]]).first
         location = Location.create(:country => user["country"], :state => user["state"], :city => user["city"]) if location.blank?
-        ass_loc = AssociateLocation.where(:associate_id => @associate.user_id, :start_date => "#{start_date} 00:00:00", :end_date => "#{end_date} 00:00:00").first
+        ass_loc = AssociateLocation.where(:associate_id => @associate.id, :start_date => "#{start_date} 00:00:00", :end_date => "#{end_date} 00:00:00").first
         # avoid assigning the each attributes separately
         if ass_loc.blank?
-          associate_location = AssociateLocation.create(:associate_id => @associate.user_id, :location_id => location.id, :vnet => user["vnet"], :seat_number => user["seat_number"], :start_date => start_date, :end_date => end_date)
+          associate_location = AssociateLocation.create(:associate_id => @associate.id, :location_id => location.id, :vnet => user["vnet"], :seat_number => user["seat_number"], :start_date => start_date, :end_date => end_date)
         else
-          ass_loc.associate_id = @associate.user_id
+          ass_loc.associate_id = @associate.id
           ass_loc.location_id = location.id
           ass_loc.vnet = user["vnet"]
           ass_loc.seat_number = user["seat_number"]
@@ -52,8 +52,7 @@ class App < Sinatra::Base
       {:status => "failed"}.to_json
     end
   end
-  
-  # Optimize the code # code gets repeated in the '/associate' # Please have look
+ 
   get '/locations/new' do
     if @flag
       locations = Location.all
@@ -67,11 +66,22 @@ class App < Sinatra::Base
     end
   end
 
- get '/locations' do
+  get '/locations/latitude_and_longitude' do
+    if @flag
+      location = Location.all
+      lat = location.map(&:latitude).reject {|e| e.nil? }
+      lon = location.map(&:longitude).reject {|e| e.nil? } 
+      lat_and_lon = lat.zip(lon)    
+      {:lat_and_lon => lat_and_lon, :access_token => @access_token, :status => "success"}.to_json
+    else
+      {:status => "failed"}.to_json
+    end
+  end
+
+  get '/locations' do
     search_key = generate_search_query
     AssociateLocation.search_associates(params[:search][:associate_name],search_key ,params[:search][:location]).to_json(:include=>[:associate,:location])
   end
-
 
   def generate_search_query
     date = Date.today
@@ -89,16 +99,4 @@ class App < Sinatra::Base
     return search_key
   end
 
-  get '/associate' do
-    if @flag
-      locations = Location.all
-      addresses = locations.map(&:address).uniq.reject { |a| a.nil? }
-      countries = locations.map(&:country).uniq.reject { |c| c.nil? }
-      states = locations.map(&:state).uniq.reject { |s| s.nil? }
-      cities = locations.map(&:city).uniq.reject { |c| c.nil? }
-      {:addresses => addresses, :countries => countries, :states => states, :cities => cities, :access_token => @access_token, :status => "success"}.to_json
-    else
-      {:status => "failed"}.to_json
-    end
-  end
 end
