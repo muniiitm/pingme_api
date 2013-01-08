@@ -1,6 +1,8 @@
 require File.join(File.dirname(__FILE__), 'environment')
 
 class App < Sinatra::Base
+	register Sinatra::Initializers
+
 	before do
 		@flag = false		
 		unless params[:access_token].nil?
@@ -12,8 +14,7 @@ class App < Sinatra::Base
 	  end	  
 	end
 
-  get "/" do
-    x = Associate.where("user_id = 1")
-    x.inspect
+  get "/" do  	
+  	"Welcome To Pingme !!!"
   end
 end

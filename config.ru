@@ -7,6 +7,7 @@ require 'yaml'
 require "haml"
 require 'json'
 require "sinatra/json"
+require 'sinatra-initializers'
 require "./app"
 
 set :run, false

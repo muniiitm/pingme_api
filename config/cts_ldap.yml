@@ -1,0 +1,8 @@
+ # LDAP Server Configuration
+ldap_host: "10.237.5.106"
+ldap_port: "3268"
+ldap_username: "systompun"
+ldap_password: "password-1"
+ldap_mailpostfix: "@cognizant.com"
+ldap_search_filter: "sAMAccountName"
+ldap_treebase: "dc=cts,dc=com"

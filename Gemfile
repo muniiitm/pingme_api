@@ -9,6 +9,7 @@ gem "chronic"
 
 gem 'activerecord'
 gem 'sinatra-activerecord'
+gem 'sinatra-initializers'
 
 gem 'net-ldap'
 gem 'json'
@@ -17,10 +18,10 @@ gem 'factory_girl_rails'
 gem 'factory_girl'
 gem 'mysql2'
 gem 'dm-mysql-adapter'
+gem 'rack-test'
 
 group :test do
-	gem 'rspec', :require => 'spec'
-  gem 'rack-test'
+	gem 'rspec', :require => 'spec'  
 	gem 'capybara'
 	gem "factory_girl"
 end
