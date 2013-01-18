@@ -30,7 +30,7 @@ class App < Sinatra::Base
       end
       if !start_date.blank? && !end_date.blank?
         location = Location.where(["country = ? and city = ? and state = ?", user["country"], user["city"], user["state"]]).first
-        location = Location.create(:country => user["country"], :state => user["state"], :city => user["city"]) if location.blank?
+        location = Location.create(:country => user["country"], :state => user["state"], :city => user["city"],:address => user['location']) if location.blank?
         ass_loc = AssociateLocation.where(:associate_id => @associate.id, :start_date => "#{start_date} 00:00:00", :end_date => "#{end_date} 00:00:00").first
         # avoid assigning the each attributes separately
         if ass_loc.blank?
