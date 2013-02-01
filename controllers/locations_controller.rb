@@ -1,15 +1,5 @@
 class App < Sinatra::Base
 
-  get '/update_latlong'do
-    locations = Location.all
-    locations.map do |location|
-      if !location.address.nil?
-        response = GeocoderService.address_to_latlng(location.address)
-        location.update_attributes(:longitude => response.first.longitude,:latitude=>response.first.latitude) unless response.nil?
-      end
-    end
-  end
-  
   # Move the logics into model
   post '/associates/location' do
     user = params[:user]
@@ -19,10 +9,10 @@ class App < Sinatra::Base
         current_date = DateTime.now
         start_date = current_date.strftime("%Y-%m-%d")
         end_date = "#{start_date}" if date_range == "today"
-        
+
         if date_range == 'week'
           start_date = Date.today.beginning_of_week.strftime("%Y-%m-%d")
-          end_date = Date.today.end_of_week.strftime("%Y-%m-%d") 
+          end_date = Date.today.end_of_week.strftime("%Y-%m-%d")
         end
       else
         start_date = user["start_date"]
@@ -44,6 +34,10 @@ class App < Sinatra::Base
           ass_loc.end_date = end_date
           ass_loc.save
         end
+
+        # to update the latitude and longitude
+        update_lat_and_lon(location)
+
         {:location => location, :access_token => @access_token, :status => "success"}.to_json
       else
         {:status => "date_field_empty"}.to_json
@@ -52,7 +46,7 @@ class App < Sinatra::Base
       {:status => "failed"}.to_json
     end
   end
- 
+
   get '/locations/new' do
     if @flag
       locations = Location.all
@@ -70,8 +64,8 @@ class App < Sinatra::Base
     if @flag
       location = Location.all
       lat = location.map(&:latitude).reject {|e| e.nil? }
-      lon = location.map(&:longitude).reject {|e| e.nil? } 
-      lat_and_lon = lat.zip(lon)    
+      lon = location.map(&:longitude).reject {|e| e.nil? }
+      lat_and_lon = lat.zip(lon)
       {:lat_and_lon => lat_and_lon, :access_token => @access_token, :status => "success"}.to_json
     else
       {:status => "failed"}.to_json
@@ -83,9 +77,14 @@ class App < Sinatra::Base
     AssociateLocation.search_associates(params[:search][:associate_name],search_key ,params[:search][:location]).to_json(:include=>[:associate,:location])
   end
 
+  get '/associates/total' do
+    associates = Associate.count
+    {:associates => associates, :status => "success"}.to_json
+  end
+
   def generate_search_query
     date = Date.today
-    case params[:search][:time_period] 
+    case params[:search][:time_period]
       when "today"
         search_date = "DATE(start_date) or DATE(end_date) = '#{date}'"
       when "this week"
