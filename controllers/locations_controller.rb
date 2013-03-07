@@ -4,44 +4,18 @@ class App < Sinatra::Base
   post '/associates/location' do
     user = params[:user]
     if @flag
-      date_range = user["date_range"]
-      if date_range
-        current_date = DateTime.now
-        start_date = current_date.strftime("%Y-%m-%d")
-        end_date = "#{start_date}" if date_range == "today"
+      start_date, end_date = Location.start_and_end_date(user['date_range'], user['start_date'], user['end_date'])
 
-        if date_range == 'week'
-          start_date = Date.today.beginning_of_week.strftime("%Y-%m-%d")
-          end_date = Date.today.end_of_week.strftime("%Y-%m-%d")
-        end
-      else
-        start_date = user["start_date"]
-        end_date = user["end_date"]
-      end
-      if !start_date.blank? && !end_date.blank?
-        location = Location.where(["country = ? and city = ? and state = ?", user["country"], user["city"], user["state"]]).first
-        location = Location.create(:country => user["country"], :state => user["state"], :city => user["city"],:address => user['location']) if location.blank?
-        ass_loc = AssociateLocation.where(:associate_id => @associate.id, :start_date => "#{start_date} 00:00:00", :end_date => "#{end_date} 00:00:00").first
-        # avoid assigning the each attributes separately
-        if ass_loc.blank?
-          associate_location = AssociateLocation.create(:associate_id => @associate.id, :location_id => location.id, :vnet => user["vnet"], :seat_number => user["seat_number"], :start_date => start_date, :end_date => end_date)
-        else
-          ass_loc.associate_id = @associate.id
-          ass_loc.location_id = location.id
-          ass_loc.vnet = user["vnet"]
-          ass_loc.seat_number = user["seat_number"]
-          ass_loc.start_date = start_date
-          ass_loc.end_date = end_date
-          ass_loc.save
-        end
+      # create the location
+      location = Location.create_location(user['location'], user['country'], user['city'], user['state'])
 
-        # to update the latitude and longitude
-        update_lat_and_lon(location)
+      # create the associate location
+      associate_location = AssociateLocation.create_associate_location(@associate.id, location.id, start_date, end_date, vnet, seat_number)
 
-        {:location => location, :access_token => @access_token, :status => "success"}.to_json
-      else
-        {:status => "date_field_empty"}.to_json
-      end
+      # to update the latitude and longitude
+      update_lat_and_lon(location)
+
+      {:location => location, :access_token => @access_token, :status => "success"}.to_json
     else
       {:status => "failed"}.to_json
     end
@@ -49,22 +23,17 @@ class App < Sinatra::Base
 
   get '/locations/new' do
     if @flag
-      locations = Location.all
-      addresses = locations.map(&:address).uniq.reject { |a| a.nil? }
-      countries = locations.map(&:country).uniq.reject { |c| c.nil? }
-      states = locations.map(&:state).uniq.reject { |s| s.nil? }
-      cities = locations.map(&:city).uniq.reject { |c| c.nil? }
+      addresses, countries, states, cities = Location.get_all_address
       {:addresses => addresses, :countries => countries, :states => states, :cities => cities, :access_token => @access_token, :status => "success"}.to_json
     else
       {:status => "failed"}.to_json
     end
   end
 
+  # get latitude and longitude information for all address from location table.
   get '/locations/latitude_and_longitude' do
     if @flag
-      location = Location.all
-      lat = location.map(&:latitude).reject {|e| e.nil? }
-      lon = location.map(&:longitude).reject {|e| e.nil? }
+      lat, lon = Location.get_all_lat_and_lon
       lat_and_lon = lat.zip(lon)
       {:lat_and_lon => lat_and_lon, :access_token => @access_token, :status => "success"}.to_json
     else
