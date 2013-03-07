@@ -20,6 +20,7 @@ class Location < ActiveRecord::Base
     location = Location.find_or_create_by_country_and_city_and_state(country, city, state)
     location.address = address
     location.save
+    return location
   end
 
   def self.get_all_address

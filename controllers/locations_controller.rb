@@ -10,7 +10,7 @@ class App < Sinatra::Base
       location = Location.create_location(user['location'], user['country'], user['city'], user['state'])
 
       # create the associate location
-      associate_location = AssociateLocation.create_associate_location(@associate.id, location.id, start_date, end_date, vnet, seat_number)
+      associate_location = AssociateLocation.create_associate_location(@associate.id, location.id, start_date, end_date, user["vnet"], user["seat_number"])
 
       # to update the latitude and longitude
       update_lat_and_lon(location)
